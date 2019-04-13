@@ -14,17 +14,15 @@ from sklearn.externals import joblib
 df = pd.read_csv("word_vector2.csv")
 y = df.iloc[:, 1]
 x = df.iloc[:, 2:]
-print(x)
-x_pca = PCA(n_components = 150).fit_transform(x)
 
-clf = svm.SVC(C = 0.8, kernel = "rbf", gamma = 5.0, probability = True)
-clf.fit(x_pca,y)
+clf = svm.SVC(C = 20, kernel = "rbf", gamma = 0.03, probability = True)
+clf.fit(x,y)
 
 joblib.dump(clf, "svm.model")
-clf = joblib.load("svm.model")
+# clf = joblib.load("svm.model")
 
-print('Test Accuracy: %.2f'% clf.score(x_pca,y))
-pred_probas = clf.predict_proba(x_pca)[:, 1] #score
+print('Test Accuracy: %.2f'% clf.score(x,y))
+pred_probas = clf.predict_proba(x)[:, 1] #score
 print(pred_probas)
 
 fpr, tpr, _ = metrics.roc_curve(y, pred_probas)
@@ -38,9 +36,7 @@ plt.show()
 
 dff = pd.read_csv("test_word_vector.csv")
 XX = dff.iloc[:, 1:]
-xx_pca = PCA(n_components = 150).fit_transform(XX)
-print(xx_pca)
-YY = clf.predict_proba(xx_pca)[:, 1]
+YY = clf.predict_proba(XX)[:, 1]
 
 fout = codecs.open("handout.csv", "w")
 fout.write("id,pred\n")

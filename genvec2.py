@@ -5,7 +5,9 @@
 import codecs
 import numpy as np
 import pandas as pd
+from gensim.models.word2vec import Word2Vec
 
+'''
 fin_m = codecs.open("bigram\\sgns.wiki.bigram", "r", encoding="utf-8")
 model = {}
 ln = fin_m.readline()
@@ -15,6 +17,9 @@ while ln != "":
     model[words[0]] = list(map(float, words[1 : -1]))
     ln = fin_m.readline()
 fin_m.close()
+'''
+
+model = Word2Vec.load("word_mat.txt")
 
 def getVec(words, model):
     vecs = []
@@ -26,13 +31,15 @@ def getVec(words, model):
             continue
     return np.array(vecs, dtype="float")
 
-fin_p = codecs.open("positive.txt", "r", encoding="utf-8")
+fin_p = codecs.open("positive.txt", "r")
 fin_n = codecs.open("negative.txt", "r")
 
 ln = fin_p.readline()
 fvp = []
 while ln != "":
-    words = list(map(lambda s : s[0 : -1], ln.split(' ')))[0 : -1]
+    words = list(map(lambda s : s.strip(), ln.split(' ')))
+    if words[-1] == "":
+        words = words[0 : -1]
     vecs = getVec(words, model)
     if len(vecs) > 0:
         vec = sum(np.array(vecs)) / len(vecs)
@@ -42,7 +49,9 @@ while ln != "":
 ln = fin_n.readline()
 fvn = []
 while ln != "":
-    words = list(map(lambda s : s[0 : -1], ln.split(' ')))[0 : -1]
+    words = list(map(lambda s : s.strip(), ln.split(' ')))
+    if words[-1] == "":
+        words = words[0 : -1]
     vecs = getVec(words, model)
     if len(vecs) > 0:
         vec = sum(np.array(vecs)) / len(vecs)
